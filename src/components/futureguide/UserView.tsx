@@ -1,45 +1,185 @@
 import { useState } from "react";
-import { Send, Sparkles, CheckCircle2, Circle, Loader2, BookOpen, Briefcase, Rocket, Award, Target } from "lucide-react";
+import { Send, Sparkles, CheckCircle2, Loader2, BookOpen, Briefcase, Rocket, Award, Target, GraduationCap } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-type Msg = { role: "user" | "ai"; text: string; steps?: string[] };
-
-const SAMPLE_REPLIES: Record<string, string[]> = {
-  default: [
-    "Learn Python fundamentals (4 weeks)",
-    "Build 2 data projects with pandas & NumPy",
-    "Study core ML concepts: regression, trees, neural nets",
-    "Complete a Kaggle competition end-to-end",
-    "Publish a portfolio + apply to junior AI roles",
-  ],
+type CareerPath = {
+  title: string;
+  match: number;
+  why: string;
+  skills: string[];
+  roadmap: { month: string; focus: string }[];
 };
+
+type Msg = { role: "user" | "ai"; text: string; paths?: CareerPath[] };
+
+const CAREER_DATASET: { keywords: string[]; path: CareerPath }[] = [
+  {
+    keywords: ["ai", "ml", "machine", "python", "math", "statistics", "model"],
+    path: {
+      title: "AI / Machine Learning Engineer",
+      match: 96,
+      why: "Strong quantitative & analytical signals align with model-building work.",
+      skills: ["Python", "PyTorch / TensorFlow", "Linear Algebra", "MLOps", "Prompt Engineering"],
+      roadmap: [
+        { month: "Month 1–2", focus: "Python + NumPy/Pandas fundamentals" },
+        { month: "Month 3–4", focus: "Core ML: regression, trees, neural nets" },
+        { month: "Month 5", focus: "Build 2 portfolio projects + Kaggle entry" },
+        { month: "Month 6", focus: "Deploy a model & apply to junior AI roles" },
+      ],
+    },
+  },
+  {
+    keywords: ["data", "analytics", "sql", "business", "dashboard", "insight"],
+    path: {
+      title: "Data Analyst",
+      match: 92,
+      why: "Curiosity for patterns + storytelling with numbers.",
+      skills: ["SQL", "Excel / Sheets", "Power BI / Tableau", "Statistics", "Communication"],
+      roadmap: [
+        { month: "Month 1", focus: "SQL & spreadsheet fluency" },
+        { month: "Month 2–3", focus: "Statistics + Tableau / Power BI" },
+        { month: "Month 4–5", focus: "3 dashboard case studies" },
+        { month: "Month 6", focus: "Portfolio site + analyst interviews" },
+      ],
+    },
+  },
+  {
+    keywords: ["design", "ux", "ui", "creative", "art", "product", "figma"],
+    path: {
+      title: "UX / Product Designer",
+      match: 94,
+      why: "Empathy + aesthetics + systems thinking — designer DNA.",
+      skills: ["Figma", "User Research", "Design Systems", "Prototyping", "Accessibility"],
+      roadmap: [
+        { month: "Month 1", focus: "Figma + UI fundamentals" },
+        { month: "Month 2–3", focus: "User research & journey mapping" },
+        { month: "Month 4–5", focus: "3 end-to-end case studies" },
+        { month: "Month 6", focus: "Portfolio + mentor reviews + apply" },
+      ],
+    },
+  },
+  {
+    keywords: ["web", "code", "software", "developer", "engineer", "react", "frontend", "backend"],
+    path: {
+      title: "Full-Stack Web Developer",
+      match: 93,
+      why: "Builder mindset with appetite for shipping real products.",
+      skills: ["JavaScript / TypeScript", "React", "Node.js", "PostgreSQL", "Git"],
+      roadmap: [
+        { month: "Month 1", focus: "HTML, CSS, JavaScript core" },
+        { month: "Month 2–3", focus: "React + REST APIs" },
+        { month: "Month 4–5", focus: "Build & deploy 2 full-stack apps" },
+        { month: "Month 6", focus: "Open-source contributions + interviews" },
+      ],
+    },
+  },
+  {
+    keywords: ["security", "cyber", "hack", "network", "infosec"],
+    path: {
+      title: "Cybersecurity Analyst",
+      match: 91,
+      why: "Defensive thinking + curiosity about how systems break.",
+      skills: ["Networking", "Linux", "SIEM Tools", "Threat Modeling", "Python Scripting"],
+      roadmap: [
+        { month: "Month 1–2", focus: "Networking + Linux essentials" },
+        { month: "Month 3", focus: "CompTIA Security+ prep" },
+        { month: "Month 4–5", focus: "TryHackMe / HackTheBox labs" },
+        { month: "Month 6", focus: "Cert + SOC analyst applications" },
+      ],
+    },
+  },
+  {
+    keywords: ["cloud", "devops", "infra", "aws", "azure", "kubernetes"],
+    path: {
+      title: "Cloud / DevOps Engineer",
+      match: 90,
+      why: "Systems thinker who enjoys automation & reliability.",
+      skills: ["Linux", "Docker", "Kubernetes", "AWS / Azure", "Terraform"],
+      roadmap: [
+        { month: "Month 1", focus: "Linux + Bash + Git" },
+        { month: "Month 2–3", focus: "Docker & CI/CD pipelines" },
+        { month: "Month 4–5", focus: "AWS Solutions Architect Associate prep" },
+        { month: "Month 6", focus: "IaC project + junior DevOps applications" },
+      ],
+    },
+  },
+  {
+    keywords: ["sustain", "green", "climate", "environment", "energy", "eco"],
+    path: {
+      title: "Sustainability / Green-Tech Specialist",
+      match: 89,
+      why: "Mission-driven and aligned with the green economy of Vision 2035.",
+      skills: ["ESG Frameworks", "Carbon Accounting", "Data Analysis", "Policy Literacy", "GIS"],
+      roadmap: [
+        { month: "Month 1", focus: "Climate & ESG fundamentals" },
+        { month: "Month 2–3", focus: "Carbon accounting + GHG protocol" },
+        { month: "Month 4–5", focus: "Real-org carbon footprint case study" },
+        { month: "Month 6", focus: "Certification + green-tech internships" },
+      ],
+    },
+  },
+  {
+    keywords: ["teach", "education", "tutor", "learn", "mentor"],
+    path: {
+      title: "EdTech Specialist",
+      match: 92,
+      why: "Passion for learning + tech amplifies impact at scale (SDG 4).",
+      skills: ["Instructional Design", "LMS Platforms", "Content Creation", "Analytics", "AI Tools"],
+      roadmap: [
+        { month: "Month 1", focus: "Pedagogy & instructional design" },
+        { month: "Month 2–3", focus: "Build 2 micro-courses on a public LMS" },
+        { month: "Month 4–5", focus: "AI tools for personalized learning" },
+        { month: "Month 6", focus: "Portfolio + EdTech role applications" },
+      ],
+    },
+  },
+];
+
+function pickPaths(input: string): CareerPath[] {
+  const text = input.toLowerCase();
+  const scored = CAREER_DATASET.map(({ keywords, path }) => ({
+    path,
+    score: keywords.reduce((s, k) => s + (text.includes(k) ? 1 : 0), 0),
+  }));
+  const matched = scored.filter((s) => s.score > 0).sort((a, b) => b.score - a.score);
+  const remaining = CAREER_DATASET
+    .map((d) => d.path)
+    .filter((p) => !matched.find((m) => m.path.title === p.title));
+  const chosen =
+    matched.length >= 3
+      ? matched.slice(0, 3).map((m) => m.path)
+      : [...matched.map((m) => m.path), ...remaining.slice(0, 3 - matched.length)];
+  return chosen;
+}
 
 export function UserView() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Msg[]>([
-    { role: "ai", text: "Hi! Tell me your interests or skills and I'll generate a personalized career roadmap." },
+    { role: "ai", text: "Hi Emaan! Tell me your interests or skills and I'll generate 3 tailored career paths with a 6-month roadmap." },
   ]);
   const [loading, setLoading] = useState(false);
 
   const send = () => {
-    if (!input.trim()) return;
+    if (!input.trim() || loading) return;
     const userMsg: Msg = { role: "user", text: input };
+    const userInput = input;
     setMessages((m) => [...m, userMsg]);
     setInput("");
     setLoading(true);
     setTimeout(() => {
+      const paths = pickPaths(userInput);
       setMessages((m) => [
         ...m,
         {
           role: "ai",
-          text: `Here's a tailored roadmap based on "${userMsg.text}":`,
-          steps: SAMPLE_REPLIES.default,
+          text: `Based on "${userInput}", here are your top 3 tailored career paths — each mapped to a 6-month plan aligned with UN SDG 4 (Quality Education):`,
+          paths,
         },
       ]);
       setLoading(false);
-    }, 900);
+    }, 1500);
   };
 
   return (
@@ -52,7 +192,7 @@ export function UserView() {
           <Badge className="bg-white/15 text-white border-0 backdrop-blur-sm mb-3">
             <Sparkles className="h-3 w-3 mr-1" /> Powered by AI
           </Badge>
-          <h1 className="text-3xl font-bold tracking-tight">Welcome back, Amal 👋</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Welcome back, Emaan Rana 👋</h1>
           <p className="mt-2 text-primary-foreground/90 max-w-2xl">
             Your personalized career compass. Chat with the AI advisor, track your progress,
             and unlock the skills the world needs next.
@@ -78,23 +218,48 @@ export function UserView() {
           <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-gradient-soft/30">
             {messages.map((m, i) => (
               <div key={i} className={m.role === "user" ? "flex justify-end" : "flex justify-start"}>
-                <div className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm shadow-sm ${
+                <div className={`${m.paths ? "max-w-[92%]" : "max-w-[80%]"} rounded-2xl px-4 py-3 text-sm shadow-sm ${
                   m.role === "user"
                     ? "bg-gradient-hero text-primary-foreground rounded-br-sm"
                     : "bg-card border border-border rounded-bl-sm"
                 }`}>
-                  <p>{m.text}</p>
-                  {m.steps && (
-                    <ol className="mt-3 space-y-2">
-                      {m.steps.map((s, idx) => (
-                        <li key={idx} className="flex gap-2.5 text-xs">
-                          <span className="h-5 w-5 rounded-full bg-primary/10 text-primary grid place-items-center text-[10px] font-bold shrink-0">
-                            {idx + 1}
-                          </span>
-                          <span className="text-foreground">{s}</span>
-                        </li>
+                  <p className={m.paths ? "mb-3" : ""}>{m.text}</p>
+                  {m.paths && (
+                    <div className="space-y-3">
+                      {m.paths.map((p, idx) => (
+                        <div key={idx} className="rounded-xl border border-border/70 bg-gradient-soft/40 p-3.5">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex items-center gap-2">
+                              <span className="h-6 w-6 rounded-full bg-gradient-hero text-primary-foreground grid place-items-center text-[11px] font-bold">
+                                {idx + 1}
+                              </span>
+                              <p className="font-semibold text-foreground">{p.title}</p>
+                            </div>
+                            <Badge className="bg-primary/10 text-primary border-0 text-[10px]">{p.match}% match</Badge>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-2">{p.why}</p>
+                          <p className="mt-3 text-[11px] uppercase tracking-wide font-semibold text-muted-foreground">Required skills</p>
+                          <div className="flex flex-wrap gap-1.5 mt-1.5">
+                            {p.skills.map((s) => (
+                              <span key={s} className="text-[11px] px-2 py-0.5 rounded-md bg-accent text-accent-foreground">{s}</span>
+                            ))}
+                          </div>
+                          <p className="mt-3 text-[11px] uppercase tracking-wide font-semibold text-muted-foreground">6-month roadmap</p>
+                          <ol className="mt-1.5 space-y-1">
+                            {p.roadmap.map((r, j) => (
+                              <li key={j} className="flex gap-2 text-xs">
+                                <span className="text-primary font-semibold shrink-0 w-20">{r.month}</span>
+                                <span className="text-foreground">{r.focus}</span>
+                              </li>
+                            ))}
+                          </ol>
+                        </div>
                       ))}
-                    </ol>
+                      <p className="text-[11px] text-muted-foreground flex items-center gap-1.5 pt-1">
+                        <GraduationCap className="h-3 w-3 text-primary" />
+                        Aligned with UN SDG 4 — Quality, equitable & lifelong learning.
+                      </p>
+                    </div>
                   )}
                 </div>
               </div>
@@ -179,7 +344,7 @@ export function UserView() {
                     </div>
                     <p className="text-xs text-muted-foreground">{step.desc}</p>
                   </div>
-                  {done && <Circle className="h-0 w-0" />}
+                  {done && <CheckCircle2 className="h-0 w-0 sr-only" />}
                 </div>
               );
             })}
