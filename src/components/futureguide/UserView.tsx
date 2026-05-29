@@ -192,7 +192,7 @@ export function UserView() {
           <Badge className="bg-white/15 text-white border-0 backdrop-blur-sm mb-3">
             <Sparkles className="h-3 w-3 mr-1" /> Powered by AI
           </Badge>
-          <h1 className="text-3xl font-bold tracking-tight">Welcome back, Amal 👋</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Welcome back, Emaan Rana 👋</h1>
           <p className="mt-2 text-primary-foreground/90 max-w-2xl">
             Your personalized career compass. Chat with the AI advisor, track your progress,
             and unlock the skills the world needs next.
