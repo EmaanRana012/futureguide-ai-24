@@ -344,7 +344,7 @@ export function UserView() {
                     </div>
                     <p className="text-xs text-muted-foreground">{step.desc}</p>
                   </div>
-                  {done && <Circle className="h-0 w-0" />}
+                  {done && <CheckCircle2 className="h-0 w-0 sr-only" />}
                 </div>
               );
             })}
