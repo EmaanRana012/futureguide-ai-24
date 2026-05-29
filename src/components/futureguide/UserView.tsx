@@ -218,23 +218,48 @@ export function UserView() {
           <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-gradient-soft/30">
             {messages.map((m, i) => (
               <div key={i} className={m.role === "user" ? "flex justify-end" : "flex justify-start"}>
-                <div className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm shadow-sm ${
+                <div className={`${m.paths ? "max-w-[92%]" : "max-w-[80%]"} rounded-2xl px-4 py-3 text-sm shadow-sm ${
                   m.role === "user"
                     ? "bg-gradient-hero text-primary-foreground rounded-br-sm"
                     : "bg-card border border-border rounded-bl-sm"
                 }`}>
-                  <p>{m.text}</p>
-                  {m.steps && (
-                    <ol className="mt-3 space-y-2">
-                      {m.steps.map((s, idx) => (
-                        <li key={idx} className="flex gap-2.5 text-xs">
-                          <span className="h-5 w-5 rounded-full bg-primary/10 text-primary grid place-items-center text-[10px] font-bold shrink-0">
-                            {idx + 1}
-                          </span>
-                          <span className="text-foreground">{s}</span>
-                        </li>
+                  <p className={m.paths ? "mb-3" : ""}>{m.text}</p>
+                  {m.paths && (
+                    <div className="space-y-3">
+                      {m.paths.map((p, idx) => (
+                        <div key={idx} className="rounded-xl border border-border/70 bg-gradient-soft/40 p-3.5">
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex items-center gap-2">
+                              <span className="h-6 w-6 rounded-full bg-gradient-hero text-primary-foreground grid place-items-center text-[11px] font-bold">
+                                {idx + 1}
+                              </span>
+                              <p className="font-semibold text-foreground">{p.title}</p>
+                            </div>
+                            <Badge className="bg-primary/10 text-primary border-0 text-[10px]">{p.match}% match</Badge>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-2">{p.why}</p>
+                          <p className="mt-3 text-[11px] uppercase tracking-wide font-semibold text-muted-foreground">Required skills</p>
+                          <div className="flex flex-wrap gap-1.5 mt-1.5">
+                            {p.skills.map((s) => (
+                              <span key={s} className="text-[11px] px-2 py-0.5 rounded-md bg-accent text-accent-foreground">{s}</span>
+                            ))}
+                          </div>
+                          <p className="mt-3 text-[11px] uppercase tracking-wide font-semibold text-muted-foreground">6-month roadmap</p>
+                          <ol className="mt-1.5 space-y-1">
+                            {p.roadmap.map((r, j) => (
+                              <li key={j} className="flex gap-2 text-xs">
+                                <span className="text-primary font-semibold shrink-0 w-20">{r.month}</span>
+                                <span className="text-foreground">{r.focus}</span>
+                              </li>
+                            ))}
+                          </ol>
+                        </div>
                       ))}
-                    </ol>
+                      <p className="text-[11px] text-muted-foreground flex items-center gap-1.5 pt-1">
+                        <GraduationCap className="h-3 w-3 text-primary" />
+                        Aligned with UN SDG 4 — Quality, equitable & lifelong learning.
+                      </p>
+                    </div>
                   )}
                 </div>
               </div>
